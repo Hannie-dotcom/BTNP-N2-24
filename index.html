@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 24 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 24 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 20</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 20 câu bài tập Shinkanzen N2 - Bài 24 (Trang 110 - 111)
+        const quizData = [
+            // Mục 1: ～まい（か）
+            {
+                q: 'あんな不潔な店には二度と行く ( )。',
+                options: ['まい', 'よう', 'まいか'],
+                answer: 0,
+                grammar: 'V-辞書形 / V-ます + まい',
+                meaning: 'Quyết không... / Nhất định không... (Thể hiện ý chí quyết tâm phủ định mạnh mẽ).',
+                trans: 'Cửa hàng mất vệ sinh như thế kia thì tôi quyết không đến lần thứ hai.'
+            },
+            {
+                q: 'どんなに不景気になろうと、この事業だけは絶対にやめる ( )。',
+                options: ['まい', 'よう', 'ない'],
+                answer: 0,
+                grammar: 'V-辞書形 + まい',
+                meaning: 'Bày tỏ ý chí quyết tâm không từ bỏ dù kinh tế có suy thoái thế nào.',
+                trans: 'Dù kinh tế có suy thoái đến mức nào đi nữa, riêng sự nghiệp này tôi quyết không từ bỏ.'
+            },
+            {
+                q: '自分の失敗談は聞かれない限り、人に話す ( )。',
+                options: ['まいか', 'まい', 'まいと思う'],
+                answer: 1,
+                grammar: 'V-辞書形 + まい',
+                meaning: 'Quyết không kể chuyện thất bại của bản thân trừ khi được hỏi.',
+                trans: 'Chuyện thất bại của bản thân trừ khi được hỏi, còn không tôi quyết không kể cho người khác.'
+            },
+            // Mục 2: ～（よ）うか～まいか
+            {
+                q: '雨が降ってきた。傘を ( ) まいか迷ったが、結局買わずに走った。',
+                options: ['買おうか', '買おう', '買おうとした'],
+                answer: 0,
+                grammar: 'V-意向形 + か + V-辞書形 + まいか',
+                meaning: 'Nên làm hay không nên làm... (Phân vân, do dự giữa hai lựa chọn).',
+                trans: 'Trời đổ mưa. Tôi phân vân xem nên mua ô hay không, cuối cùng không mua mà chạy luôn.'
+            },
+            {
+                q: '本当のことを ( ) まいか、一晩中悩んだ。',
+                options: ['言おうか', '言うか', '言わまいか'],
+                answer: 0,
+                grammar: 'V-意向形 + か + V-辞書形 + まいか',
+                meaning: 'Nên nói ra sự thật hay không nên nói, tôi đã trăn trở suốt cả đêm.',
+                trans: 'Nên nói ra sự thật hay không, tôi đã trăn trở suốt cả đêm.'
+            },
+            {
+                q: '帰国して就職しようか、このまま日本に残ろうか ( )。',
+                options: ['決めている', '迷っている', '決めた'],
+                answer: 1,
+                grammar: '～か ～か + 迷っている',
+                meaning: 'Phân vân giữa hai lựa chọn công việc/định hướng.',
+                trans: 'Tôi đang phân vân xem nên về nước tìm việc hay ở lại Nhật Bản như thế này.'
+            },
+            // Mục 3: ～てまでする・～までしてする
+            {
+                q: '借金をしてまで高い車を ( ) 必要はない。',
+                options: ['買う', '買った', '買いたい'],
+                answer: 0,
+                grammar: 'V-て + まで + V-辞書形',
+                meaning: 'Làm hành động cực đoan (vay nợ) để đạt mục đích (không cần thiết).',
+                trans: 'Không cần thiết phải đi vay nợ chỉ để mua chiếc xe đắt tiền.'
+            },
+            {
+                q: '徹夜までして仕上げたレポートが、( )。',
+                options: ['高く評価された', '締め切りに間に合わなかった', '無駄になった'],
+                answer: 2,
+                grammar: 'N + までして + V-た形',
+                meaning: 'Bản báo cáo hoàn thành nhờ làm việc cực đoan (thức trắng đêm) rốt cuộc lại trở nên công cốc.',
+                trans: 'Bài báo cáo tôi hoàn thành bằng việc thức trắng đêm rốt cuộc lại trở thành công cốc.'
+            },
+            {
+                q: '体を壊してまで仕事を ( ) とは思わない。',
+                options: ['続けよう', '続けた', '続ける'],
+                answer: 0,
+                grammar: 'V-て + まで + V-意向形 (～よう)',
+                meaning: 'Không có ý định làm hại sức khỏe để tiếp tục công việc.',
+                trans: 'Tôi không nghĩ mình sẽ đánh đổi sức khỏe để tiếp tục công việc.'
+            },
+            // Mục 4: ～（よ）うとする・～（よ）うとしない
+            {
+                q: '電車に乗ろうとしたとき、( )。',
+                options: ['ドアが閉まった', 'ドアを閉めた', 'ドアが開いた'],
+                answer: 0,
+                grammar: 'V-意向形 + としたとき',
+                meaning: 'Ngay khi định/sắp làm hành động A thì sự việc B chen vào.',
+                trans: 'Ngay khi tôi định bước lên tàu điện thì cửa lại đóng sầm lại.'
+            },
+            {
+                q: '子供はどんなに叱られても、自分の非を ( ) としない。',
+                options: ['認めよう', '認めない', '認め'],
+                answer: 0,
+                grammar: 'V-意向形 + としない',
+                meaning: 'Hoàn toàn không có ý định/không chịu làm... (Thể hiện thái độ ngoan cố).',
+                trans: 'Đứa trẻ dù bị mắng thế nào cũng hoàn toàn không chịu nhận lỗi của mình.'
+            },
+            {
+                q: '彼は自分の考えを他人に ( ) としない。',
+                options: ['押し付けよう', '押し付けない', '押し付け'],
+                answer: 0,
+                grammar: 'V-意向形 + としない',
+                meaning: 'Không có ý định áp đặt suy nghĩ của mình lên người khác.',
+                trans: 'Anh ấy không bao giờ có ý định áp đặt suy nghĩ của mình lên người khác.'
+            },
+            {
+                q: '家を出ようとしたら、( )。',
+                options: ['雨が降り出した', '買い物に行った', '鍵をかけた'],
+                answer: 0,
+                grammar: 'V-意向形 + としたら',
+                meaning: 'Vừa lúc định đi ra khỏi nhà thì trời bất ngờ đổ mưa.',
+                trans: 'Vừa lúc tôi định ra khỏi nhà thì trời bắt đầu đổ mưa.'
+            },
+            // Mục 5: ～（よ）うではないか
+            {
+                q: 'みんなで力を合わせて、この難局を ( ) ではないか。',
+                options: ['乗り越えよう', '乗り越える', '乗り越えた'],
+                answer: 0,
+                grammar: 'V-意向形 + ではないか',
+                meaning: 'Chúng ta hãy cùng nhau... (Lời kêu gọi, rủ rê trang trọng, hào hùng).',
+                trans: 'Tất cả chúng ta hãy cùng chung sức vượt qua giai đoạn khó khăn này nào!'
+            },
+            {
+                q: '新しい事業を成功させようではないか。( )。',
+                options: ['みんなで頑張りましょう', 'わたしも頑張ります', '応援してください'],
+                answer: 0,
+                grammar: 'V-意向形 + ではないか',
+                meaning: 'Kêu gọi tinh thần tập thể cùng nỗ lực.',
+                trans: 'Chúng ta hãy cùng nhau làm cho sự nghiệp mới thành công nào! Mọi người hãy cùng cố gắng nhé.'
+            },
+            {
+                q: '環境問題について、もっと真剣に ( ) ではないか。',
+                options: ['考えよう', '考えろ', '考えるべきだ'],
+                answer: 0,
+                grammar: 'V-意向形 + ではないか',
+                meaning: 'Kêu gọi tập thể cùng suy nghĩ nghiêm túc về vấn đề môi trường.',
+                trans: 'Chúng ta hãy cùng nhau suy nghĩ nghiêm túc hơn về vấn đề môi trường nào!'
+            },
+            // Mục 1~5: Bài tập tổng hợp
+            {
+                q: '嘘をついてまでお金を ( ) とは思わない。',
+                options: ['借りよう', '借りる', '借りた'],
+                answer: 0,
+                grammar: 'V-て + まで + V-意向形',
+                meaning: 'Không có ý định dùng cách cực đoan (nói dối) để vay tiền.',
+                trans: 'Tôi không nghĩ mình sẽ dùng cách nói dối chỉ để vay tiền.'
+            },
+            {
+                q: '彼は人の意見を聞こうとせず、自分の主張を通そう ( )。',
+                options: ['とする', 'としない', 'ではないか'],
+                answer: 0,
+                grammar: 'V-意向形 + とする',
+                meaning: 'Anh ta không chịu nghe ý kiến người khác mà cố gắng áp đặt chủ trương của mình.',
+                trans: 'Anh ta không chịu lắng nghe ý kiến người khác mà chỉ cố áp đặt chủ trương của mình.'
+            },
+            {
+                q: '失敗を恐れず、新しいことに挑戦してみよう ( )。',
+                options: ['ではないか', 'としないか', 'まいか'],
+                answer: 0,
+                grammar: 'V-意向形 + ではないか',
+                meaning: 'Lời kêu gọi cùng nhau thử thách điều mới mà không sợ thất bại.',
+                trans: 'Chúng ta hãy cùng nhau thử thách những điều mới mà không sợ thất bại nào!'
+            },
+            {
+                q: 'こんな危険な場所には二度と ( )。',
+                options: ['来まい', '来よう', '来ないではないか'],
+                answer: 0,
+                grammar: 'V-くる (辞書形) + まい',
+                meaning: 'Quyết tâm phủ định không quay lại nơi nguy hiểm như thế này.',
+                trans: 'Nơi nguy hiểm như thế này tôi quyết không đến lần thứ hai.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
